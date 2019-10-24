@@ -1,6 +1,7 @@
 package net.xdclass.xdvideo.mapper;
 
 import net.xdclass.xdvideo.domain.Video;
+import net.xdclass.xdvideo.provider.VideoProvider;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Component;
 
@@ -22,7 +23,9 @@ public interface VideoMapper {
     @Select("select * from video where id=#{id}")
     Video findById(int id);
 
-    @Update("update video set  title=#{title}  where id=#{id}")
+//    @Update("update video set  title=#{title}  where id=#{id}")
+    //使用sqlprovoder动态更新数据库字段
+   @UpdateProvider(type= VideoProvider.class,method = "updateVideo")
     int update(Video video);
 
     @Delete("delete from video where id=#{id}")
