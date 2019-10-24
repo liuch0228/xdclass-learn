@@ -14,7 +14,7 @@ public class TestController {
     @Autowired
     private WeChatConfig weChatConfig;
 
-    //VideoMapper不加@Component，这里会有报错提示，但不影响查询？？
+    //VideoMapper不加@Component，这里会有报错提示(IDEA设置问题)
     @Autowired
     private VideoMapper videoMapper;
 
@@ -46,7 +46,7 @@ public class TestController {
     @GetMapping("testDB")
     @ResponseBody
     public Object testDB() {
-        return videoMapper.findAll().get(0);
+        return videoMapper.findAll();
     }
 
 

@@ -1,9 +1,7 @@
 package net.xdclass.xdvideo.mapper;
 
 import net.xdclass.xdvideo.domain.Video;
-import org.apache.ibatis.annotations.Result;
-import org.apache.ibatis.annotations.Results;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -11,7 +9,6 @@ import java.util.List;
 /**
  * video数据访问层
  */
-@Component
 public interface VideoMapper {
 
     @Select("select * from video")
@@ -21,4 +18,19 @@ public interface VideoMapper {
             @Result(column = "view_num", property = "viewNum")
     })*/
     List<Video> findAll();
+
+    @Select("select * from video where id=#{id}")
+    Video findById(int id);
+
+    @Update("update video set  title=#{title}  where id=#{id}")
+    int update(Video video);
+
+    @Delete("delete from video where id=#{id}")
+    int delete(int id);
+
+
+    @Insert("INSERT INTO video( title, summary, cover_img, view_num, price, create_time,online, point)values(#{title}, #{summary}, #{coverImg}, #{viewNum}, #{price},#{createTime},#{online},#{point})")
+    int save(Video video);
+
+
 }
