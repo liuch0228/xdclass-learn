@@ -41,6 +41,8 @@ public class TestController {
 
     //http://localhost:8080/testDB
     //{"id":1,"title":"SpringBoot+Maven整合Websocket课程","summary":"这是概要","coverImg":null,"viewNum":null,"price":1000,"createTime":null,"online":0,"point":8.7}
+    /* 接口中增加@Results注解之后：{"id":1,"title":"SpringBoot+Maven整合Websocket课程","summary":"这是概要","coverImg":"https://xd-video-pc-img.oss-cn-beijing.aliyuncs.com/upload/video/video_cover.png","viewNum":12,"price":1000,"createTime":null,"online":0,"point":8.7}
+    * */
     @GetMapping("testDB")
     @ResponseBody
     public Object testDB() {
