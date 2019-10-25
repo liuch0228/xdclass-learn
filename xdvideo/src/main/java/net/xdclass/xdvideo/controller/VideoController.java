@@ -1,9 +1,15 @@
 package net.xdclass.xdvideo.controller;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import net.xdclass.xdvideo.domain.Video;
 import net.xdclass.xdvideo.service.VideoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * video接口
@@ -23,8 +29,18 @@ public class VideoController {
      */
     @GetMapping("page")
     public Object pageVideo(@RequestParam(value = "page", defaultValue = "1") int page,
-                            @RequestParam(value = "size", defaultValue = "10") int size) {
-        return videoService.findAll();
+                            @RequestParam(value = "size", defaultValue = "8") int size) {
+		PageHelper.startPage(page,size);
+		List<Video> list = videoService.findAll();
+		//返回分页数据 pageInfo包含了与分页有关的所有数据
+		PageInfo<Video> pageInfo = new PageInfo(list);
+		//只取total和list返回
+		Map map = new HashMap<String,Object>();
+		map.put("total_size",pageInfo.getTotal());
+		map.put("total_page",pageInfo.getPages());
+		map.put("current_page",page);
+		map.put("data",pageInfo.getList());
+		return map;
     }
 
 	/**

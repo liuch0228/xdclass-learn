@@ -24,3 +24,86 @@ springboot项目的启动类，必须放到项目根路径下，springboot启动
 #mybatis.configuration.mapUnderscoreToCamelCase=true
  mybatis.configuration.map-underscore-to-camel-case=true
 ```
+### springboot动态Sql语句Mybaties SqlProvider
+```java
+package net.xdclass.xdvideo.provider;
+
+import net.xdclass.xdvideo.domain.Video;
+import org.apache.ibatis.jdbc.SQL;
+
+/**
+ * video模块的mybatis sqlProvider 构建动态sql语句
+ */
+public class VideoProvider {
+  
+    public String updateVideo(final Video video) {
+        return new SQL() {
+            {
+                UPDATE("video");
+                if (video.getTitle() != null) {
+                    SET("title=#{title}");
+                }
+                WHERE("id=#{id}");
+            }
+        }.toString();
+    }
+}
+//使用：
+  @UpdateProvider(type= VideoProvider.class,method = "updateVideo")
+  int update(Video video);
+```
+### springboot下mybatis分页插件PageHelper的使用
+配置插件
+```java
+package net.xdclass.xdvideo.config;
+
+import com.github.pagehelper.PageHelper;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import java.util.Properties;
+
+/**
+ * mybatis分页插件配置类
+ */
+@Configuration
+public class MyBatisConfig {
+
+    @Bean
+    public PageHelper pageHelper() {
+        PageHelper pageHelper = new PageHelper();
+        Properties p = new Properties();
+        //设置为true，会将 RowBounds第一个参数offset当成pageNum页码使用
+        p.setProperty("offSetAsPageNum", "true");
+        //设置为true时，使用rowBounds分页会进行count查询
+        p.setProperty("rowBoundsWithCount", "true");
+        p.setProperty("reasonable", "true");
+        pageHelper.setProperties(p);
+        return pageHelper;
+    }
+}
+```
+ controller中使用插件
+```java
+ /*
+@GetMapping("page")
+    public Object pageVideo(@RequestParam(value = "page", defaultValue = "1") int page,
+                            @RequestParam(value = "size", defaultValue = "8") int size) {
+		PageHelper.startPage(page,size);
+		List<Video> list = videoService.findAll();
+		//返回分页数据 pageInfo包含了与分页有关的所有数据
+		PageInfo<Video> pageInfo = new PageInfo(list);
+		//只取total和list返回
+		Map map = new HashMap<String,Object>();
+		map.put("total_size",pageInfo.getTotal());
+		map.put("total_page",pageInfo.getPages());
+		map.put("current_page",page);
+		map.put("data",pageInfo.getList());
+		return map;
+    }
+*/
+```
+分页插件原理：
+sqlsessionFactory -> sqlSession-> executor -> mybatis sql statement
+			通过mybatis plugin 增加拦截器，然后拼装分页
+			org.apache.ibatis.plugin.Interceptor
