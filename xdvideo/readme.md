@@ -107,3 +107,14 @@ public class MyBatisConfig {
 sqlsessionFactory -> sqlSession-> executor -> mybatis sql statement
 			通过mybatis plugin 增加拦截器，然后拼装分页
 			org.apache.ibatis.plugin.Interceptor
+			
+### 微信Oath2.0交互流程
+1. 微信用户请求三方应用后台(如小D课堂)，换句话说，用户使用微信账号请求登录小D课堂
+2. 三方应用请求微信Oath2.0授权登录，微信返回三方应用一个二维码链接地址，
+前端拿到这个地址进行渲染，展示扫码页面（请求用户确认）
+3. 用户扫码确认后，请求微信，微信平台获取用户同意授权之后
+4. 微信平台携带临时授权票据code,拉起第三方应用或重定向到第三方应用
+5. 三方应用通过code加上appid和appsecret请求微信平台换取access_token
+6. 微信平台返回access_token给三方应用
+7. 三方应用通过access_token去获取微信用户基本开放信息
+https://developers.weixin.qq.com/doc/oplatform/Website_App/WeChat_Login/Wechat_Login.html

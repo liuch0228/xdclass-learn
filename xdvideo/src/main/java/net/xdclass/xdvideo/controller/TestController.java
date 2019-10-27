@@ -1,6 +1,7 @@
 package net.xdclass.xdvideo.controller;
 
 import net.xdclass.xdvideo.config.WeChatConfig;
+import net.xdclass.xdvideo.domain.JsonData;
 import net.xdclass.xdvideo.mapper.VideoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -31,12 +32,14 @@ public class TestController {
     @GetMapping("testconfig")
     @ResponseBody
     public Object testconfig() {
-        String appId = weChatConfig.getAppId();
+        /*String appId = weChatConfig.getAppId();
         String appsecret = weChatConfig.getAppsecret();
         Map map = new HashMap();
         map.put("appId", appId);
         map.put("appsecret", appsecret);
-        return map;
+        return map;*/
+        return JsonData.buildSuccess(weChatConfig.getAppId());
+
     }
 
     //http://localhost:8080/testDB
