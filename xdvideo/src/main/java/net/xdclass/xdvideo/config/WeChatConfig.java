@@ -42,12 +42,13 @@ public class WeChatConfig {
 
     /**
      * 开放平台回调url
+     *
      */
     @Value("${wxopen.redirect_url}")
     private String openRedirectUrl;
 
     /**
-     * 微信开放平台二维码连接
+     * 微信开放平台二维码连接,使用 s% 占位符表示可变参数
      */
     private final String OPEN_QRCODE_URL= "https://open.weixin.qq.com/connect/qrconnect?appid=%s&redirect_uri=%s&response_type=code&scope=snsapi_login&state=%s#wechat_redirect";
 
