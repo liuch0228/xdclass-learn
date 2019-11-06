@@ -50,7 +50,18 @@ public class WeChatConfig {
     /**
      * 微信开放平台二维码连接,使用 s% 占位符表示可变参数
      */
-    private final String OPEN_QRCODE_URL= "https://open.weixin.qq.com/connect/qrconnect?appid=%s&redirect_uri=%s&response_type=code&scope=snsapi_login&state=%s#wechat_redirect";
+    public final String OPEN_QRCODE_URL= "https://open.weixin.qq.com/connect/qrconnect?appid=%s&redirect_uri=%s&response_type=code&scope=snsapi_login&state=%s#wechat_redirect";
+    /**
+     * 获取微信开放平台access_token地址，APPID  SECRET  CODE要替换
+     * https://api.weixin.qq.com/sns/oauth2/access_token?appid=APPID&secret=SECRET&code=CODE&grant_type=authorization_code
+     */
+    public static  final String OPEN_ACCESS_TOKEN_URL="https://api.weixin.qq.com/sns/oauth2/access_token?appid=%s&secret=%s&code=%s&grant_type=authorization_code";
+
+    /**
+     * 获取微信用户基本信息API地址 ACCESS_TOKEN OPENID参数需要替换  lang=zh_CN需要指定！！！不然拿到的所有信息都是英文的
+     * https://api.weixin.qq.com/sns/userinfo?access_token=ACCESS_TOKEN&openid=OPENID
+     */
+    public static final String OPNE_USER_INFO_URL="https://api.weixin.qq.com/sns/userinfo?access_token=%s&openid=%s%lang=zh_CN";
 
     public String getOPEN_QRCODE_URL() {
         return OPEN_QRCODE_URL;

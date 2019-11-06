@@ -2,6 +2,9 @@ package net.xdclass.xdvideo.controller;
 
 import net.xdclass.xdvideo.config.WeChatConfig;
 import net.xdclass.xdvideo.domain.JsonData;
+import net.xdclass.xdvideo.domain.User;
+import net.xdclass.xdvideo.service.UserService;
+import net.xdclass.xdvideo.utils.JwtUtils;
 import org.apache.http.entity.StringEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -11,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
@@ -24,6 +28,8 @@ public class WechatController {
     @Autowired
     private WeChatConfig weChatConfig;
 
+    @Autowired
+    private UserService userService;
 
     /**
      *
@@ -48,23 +54,30 @@ public class WechatController {
         String qrcodeUrl = String.format(OPEN_QRCODE_URL, openAppId, callbakcUrl, accessPage);
         return JsonData.buildSuccess(qrcodeUrl);
     }
-    //请求： http://localhost:8080/api/v1/wechat/login_url?access_page=www.xdclass.net
+    //请求： http://localhost:8080/api/v1/wechat/login_url?access_page=http://www.xdclass.net     注意：access_page需要加上http://
     /*响应：
     * {"code":0,"data":"https://open.weixin.qq.com/connect/qrconnect?appid=wx025575eac69a2d5b&redirect_uri=http%3A%2F%2F16webtest.ngrok.xiaomiqiu.cn%2Fapi%2Fv1%2Fwechat%2Fuser%2Fcallback1&response_type=code&scope=snsapi_login&state=www.xdclass.net#wechat_redirect","msg":null}
     * */
 
     /**
+     * 扫码确认之后，微信平台回调的地址
      * 通过授权码code获取微信用户个人信息（这个接口是微信那边回调接口，需要先启动内网穿透工具）
      * 步骤1：通过code获取access_token
      * 步骤2：通过access_token获取微信用户头像和昵称等基本信息
      * @param code
-     * @param state
+     * @param state 当前用户的页面地址，需要拼接http://
      * @param response
      */
     @GetMapping("/user/callback1")
-    public void wechatUserCallBack(@RequestParam(value="code",required = true) String code, String state, HttpServletResponse response){
+    public void wechatUserCallBack(@RequestParam(value="code",required = true) String code, String state, HttpServletResponse response) throws IOException {
+//        System.out.println("code=" +code + ",state=" + state);
+        User user = userService.saveWeChatUser(code);
+        if(user != null){
+            String token = JwtUtils.generateJsonWebToken(user);
+            String name  = URLEncoder.encode(user.getName() ,"UTF-8");
+            response.sendRedirect(state + "?token=" + token + "&head_img=" + user.getHeadImg() + "&nickname=" + name);
+        }
 
-        System.out.println("code=" +code + ",state=" + state);
 
 
     }
