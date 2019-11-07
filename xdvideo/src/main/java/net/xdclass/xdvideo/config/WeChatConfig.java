@@ -63,6 +63,48 @@ public class WeChatConfig {
      */
     public static final String OPNE_USER_INFO_URL="https://api.weixin.qq.com/sns/userinfo?access_token=%s&openid=%s%lang=zh_CN";
 
+    /**
+     * 微信商户号id
+     */
+    @Value("${wxpay.mer_id}")
+    private String mchId;
+
+    /**
+     * 支付key
+     */
+    @Value("${wxpay.key}")
+    private String key;
+
+    /**
+     * 支付回调url
+     */
+    @Value("${wxpay.callback}")
+    private String payCallbackUrl;
+
+    public String getMchId() {
+        return mchId;
+    }
+
+    public void setMchId(String mchId) {
+        this.mchId = mchId;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public String getPayCallbackUrl() {
+        return payCallbackUrl;
+    }
+
+    public void setPayCallbackUrl(String payCallbackUrl) {
+        this.payCallbackUrl = payCallbackUrl;
+    }
+
     public String getOPEN_QRCODE_URL() {
         return OPEN_QRCODE_URL;
     }

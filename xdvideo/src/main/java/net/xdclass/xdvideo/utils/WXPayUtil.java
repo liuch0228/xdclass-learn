@@ -53,9 +53,10 @@ public class WXPayUtil {
             String k = (String) entry.getKey();
             String v = entry.getValue();
             if (StringUtils.isNotBlank(v) && !"sign".equals(k) && !"key".equals(k)) {
-                sb.append(k + "=" + "v" + "&");
+                sb.append(k + "=" + v + "&");
             }
         }
+        //拼接商户平台设置的密钥key
         sb.append("key=").append(key);
         String sign = CommonUtils.MD5(sb.toString()).toUpperCase();
         return sign;
