@@ -1,5 +1,12 @@
 package net.xdclass.xdvideo.controller;
 
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.EncodeHintType;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.WriterException;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import net.xdclass.xdvideo.domain.JsonData;
 import net.xdclass.xdvideo.domain.VideoOrder;
 import net.xdclass.xdvideo.dto.VideoOrderDto;
@@ -11,7 +18,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 订单接口
@@ -28,13 +41,14 @@ public class OrderController {
 //        return JsonData.buildSuccess("下单成功");
 //    }
     @GetMapping("/add")
-    public JsonData saveOrder(@RequestParam(value = "video_id", required = true) int videoId,
-                              HttpServletRequest request) {
+    public void saveOrder(@RequestParam(value = "video_id", required = true) int videoId,
+                              HttpServletRequest request, HttpServletResponse response) {
 
         //获取用户真实ip
-        String ip = IpUtils.getIpAddr(request);
+        // String ip = IpUtils.getIpAddr(request);
+        String ip = "";// 测试时，ip地址不能是本机回环地址
         //获取用户userId
-//        int userId = (int)request.getAttribute("user_id");
+        // int userId = (int)request.getAttribute("user_id");
         int userId= 1;
         VideoOrderDto videoOrderDto = new VideoOrderDto();
         videoOrderDto.setUserId(userId);
@@ -42,9 +56,29 @@ public class OrderController {
         //下单的是哪个视频的订单
         videoOrderDto.setVideoId(videoId);
 
-        VideoOrder videoOrder = videoOrderService.save(videoOrderDto);
+        String codeurl = videoOrderService.save(videoOrderDto);
 
-        return JsonData.buildSuccess(videoOrder);
+        try {
+            //生成支付二维码图片展示给用户
+            Map<EncodeHintType,Object> hints = new HashMap<>();
+            //设置纠错级别
+            hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
+            //设置编码类型
+            hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
+            //生成二维码
+            BitMatrix bitMatrix = new MultiFormatWriter().encode(codeurl, BarcodeFormat.QR_CODE, 400, 400);
+
+            ServletOutputStream out = response.getOutputStream();
+            //二维码写到客户端
+            MatrixToImageWriter.writeToStream(bitMatrix, "png", out);
+        } catch (WriterException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+
+        }
+
 
     }
 
