@@ -15,6 +15,7 @@ import net.xdclass.xdvideo.utils.WXPayUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
@@ -35,7 +36,7 @@ public class VideoOrderServiceImpl implements VideoOrderService {
     private WeChatConfig weChatConfig;
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class,propagation = Propagation.REQUIRED)
     public String save(VideoOrderDto videoOrderDto) {
         //查找视频信息
         Video video = videoMapper.findById(videoOrderDto.getVideoId());
@@ -59,7 +60,7 @@ public class VideoOrderServiceImpl implements VideoOrderService {
         videoOrder.setIp(videoOrderDto.getIp());
         videoOrder.setOutTradeNo(CommonUtils.generateUUID());
         videoOrderMapper.insert(videoOrder);
-
+        //int i = 1/0; //测试事务回滚
         //调用微信下单接口，获取支付的codeurl
         String codeURL = uniformOrder(videoOrder);
         return codeURL;
