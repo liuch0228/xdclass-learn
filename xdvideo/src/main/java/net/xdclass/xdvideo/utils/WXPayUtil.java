@@ -64,6 +64,7 @@ public class WXPayUtil {
 
     /**
      * 校验签名
+     *
      * @param params
      * @param key
      * @return
@@ -73,6 +74,29 @@ public class WXPayUtil {
         String weixinPaySign = params.get("sign").toUpperCase();
         return weixinPaySign.equals(sign);
     }
+
+    /**
+     * 获取有序map
+     *
+     * @param map
+     * @return
+     */
+    public static SortedMap<String, String> getSortedMap(Map<String, String> map) {
+        SortedMap<String, String> sortedMap = new TreeMap<>();
+        Iterator<String> it = map.keySet().iterator();
+        while (it.hasNext()) {
+            String key = (String) it.next();
+            String value = map.get(key);
+            String temp = StringUtils.EMPTY;
+            if (null != value) {
+                temp = value.trim();
+
+            }
+            sortedMap.put(key, temp);
+        }
+        return sortedMap;
+    }
+
 
     /**
      * XML格式字符串转换为Map

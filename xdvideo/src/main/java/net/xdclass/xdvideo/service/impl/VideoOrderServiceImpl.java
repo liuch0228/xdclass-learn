@@ -65,6 +65,16 @@ public class VideoOrderServiceImpl implements VideoOrderService {
         return codeURL;
     }
 
+    @Override
+    public VideoOrder findByOutTradeNo(String outTradeNo) {
+        return videoOrderMapper.findByOutTradeNo(outTradeNo);
+    }
+
+    @Override
+    public int updateVideoOderByOutTradeNo(VideoOrder videoOrder) {
+        return videoOrderMapper.updateVideoOderByOutTradeNo(videoOrder);
+    }
+
     /**
      * 统一下单
      *
