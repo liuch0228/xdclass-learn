@@ -13,6 +13,8 @@ import net.xdclass.xdvideo.utils.CommonUtils;
 import net.xdclass.xdvideo.utils.HttpUtils;
 import net.xdclass.xdvideo.utils.WXPayUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -25,7 +27,9 @@ import java.util.TreeMap;
 
 @Service
 public class VideoOrderServiceImpl implements VideoOrderService {
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    private Logger dataLogger = LoggerFactory.getLogger("dataLogger");
     @Autowired
     private UserMapper userMapper;
     @Autowired
@@ -38,6 +42,7 @@ public class VideoOrderServiceImpl implements VideoOrderService {
     @Override
     @Transactional(rollbackFor = Exception.class,propagation = Propagation.REQUIRED)
     public String save(VideoOrderDto videoOrderDto) {
+        dataLogger.info("Module=video_order`api=save`user_id={}",videoOrderDto.getUserId());
         //查找视频信息
         Video video = videoMapper.findById(videoOrderDto.getVideoId());
         //查找用户信息

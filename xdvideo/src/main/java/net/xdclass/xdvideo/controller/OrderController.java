@@ -12,6 +12,8 @@ import net.xdclass.xdvideo.domain.VideoOrder;
 import net.xdclass.xdvideo.dto.VideoOrderDto;
 import net.xdclass.xdvideo.service.VideoOrderService;
 import net.xdclass.xdvideo.utils.IpUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,6 +35,8 @@ import java.util.Map;
 //@RequestMapping("/user/api/v1/order")
 @RequestMapping("/api/v1/order")
 public class OrderController {
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private Logger dataLogger = LoggerFactory.getLogger("dataLogger"); //dataLogger是日志配置文件中定义的log名称
 
     @Autowired
     private VideoOrderService videoOrderService;
