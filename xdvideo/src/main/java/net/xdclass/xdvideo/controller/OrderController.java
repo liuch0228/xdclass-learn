@@ -32,28 +32,32 @@ import java.util.Map;
  * 订单接口
  */
 @RestController
-//@RequestMapping("/user/api/v1/order")
-@RequestMapping("/api/v1/order")
+@RequestMapping("/user/api/v1/order")
+//@RequestMapping("/api/v1/order")
 public class OrderController {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     private Logger dataLogger = LoggerFactory.getLogger("dataLogger"); //dataLogger是日志配置文件中定义的log名称
 
     @Autowired
     private VideoOrderService videoOrderService;
-    //    @GetMapping("/add")
-//    public JsonData saveOrder(){
-//        return JsonData.buildSuccess("下单成功");
-//    }
+
+    /**
+     * 扫码支付接口：用户扫描支付的二维码后，调用该接口
+     * @param videoId
+     * @param request
+     * @param response
+     */
     @GetMapping("/add")
     public void saveOrder(@RequestParam(value = "video_id", required = true) int videoId,
                               HttpServletRequest request, HttpServletResponse response) {
 
         //获取用户真实ip
-        // String ip = IpUtils.getIpAddr(request);
-        String ip = "";// 测试时，ip地址不能是本机回环地址
+         String ip = IpUtils.getIpAddr(request);
+
+//        String ip = "http://127.0.0.1";// 测试时，ip地址不能是localhost
         //获取用户userId
-        // int userId = (int)request.getAttribute("user_id");
-        int userId= 1;
+         int userId = (int)request.getAttribute("user_id");
+//        int userId= 1;
         VideoOrderDto videoOrderDto = new VideoOrderDto();
         videoOrderDto.setUserId(userId);
         videoOrderDto.setIp(ip);

@@ -33,7 +33,7 @@ public class UserServiceImpl implements UserService {
             return null;
         }
         String accessToken = (String) baseMap.get("access_token");
-        String openid = (String) baseMap.get("openidd");
+        String openid = (String) baseMap.get("openid");
         User dbUser = userMapper.findByopenid(openid);
         if(dbUser!=null){
             return dbUser; //用户信息已存在，就直接使用

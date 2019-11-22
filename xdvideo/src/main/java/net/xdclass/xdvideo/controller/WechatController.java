@@ -43,8 +43,10 @@ public class WechatController {
     private VideoOrderService videoOrderService;
 
     /**
-     * @param accessPage 用户扫码确认后的登录地址
-     * @return
+     * 生成扫一扫登录url
+     *
+     * @param accessPage 用户扫码确认后的访问地址(也就是用户登录之前的当前所在页面地址)
+     * @return 微信授权一键登录授权URL
      * @throws UnsupportedEncodingException
      */
     @GetMapping("/login_url")
@@ -81,12 +83,15 @@ public class WechatController {
      */
     @GetMapping("/user/callback1")
     public void wechatUserCallBack(@RequestParam(value = "code", required = true) String code, String state, HttpServletResponse response) throws IOException {
-//        System.out.println("code=" +code + ",state=" + state);
+        System.out.println("code=" + code + ",state=" + state);
         User user = userService.saveWeChatUser(code);
         if (user != null) {
             String token = JwtUtils.generateJsonWebToken(user);
             String name = URLEncoder.encode(user.getName(), "UTF-8");
-            response.sendRedirect(state + "?token=" + token + "&head_img=" + user.getHeadImg() + "&nickname=" + name);
+            //回调域名有问题，把域名替换成localhost:8080就可以正确回调了
+            String state1 = state.replace("http://xdclasstest2.ngrok.xiaomiqiu.cn", "http://localhost:8080");
+            //重定向到用户 登录之前的页面,下面这种写法有问题
+            response.sendRedirect(state1 + "?token=" + token + "&head_img=" + user.getHeadImg() + "&nickname=" + name);
         }
     }
 
@@ -96,12 +101,14 @@ public class WechatController {
      * 2.校验签名是否正确，防止伪造回调
      * 3.更新订单状态
      * 4.通知微信订单状态更新结果
+     *
      * @param request
      * @param response
      */
-    @RequestMapping("/order/callback1")
+    @GetMapping("/order/callback")
     public void oroderCallBack(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
+        System.out.println("微信支付成功！回调通知接口");
         //微信返回的数据是流的形式
         ServletInputStream inputStream = request.getInputStream();
         BufferedReader in = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
@@ -112,19 +119,19 @@ public class WechatController {
         }
         in.close();
         inputStream.close();
-        Map<String,String> callBackMap = WXPayUtil.xmlToMap(sb.toString());
+        Map<String, String> callBackMap = WXPayUtil.xmlToMap(sb.toString());
         System.out.println(callBackMap.toString());
         SortedMap<String, String> sortedMap = WXPayUtil.getSortedMap(callBackMap);
 
         //判断签名是否正确
-        if(WXPayUtil.isCorrectSign(sortedMap, weChatConfig.getKey())){
+        if (WXPayUtil.isCorrectSign(sortedMap, weChatConfig.getKey())) {
             System.out.println("ok");
-            if("SUCCESS".equals(sortedMap.get("result_code"))){
+            if ("SUCCESS".equals(sortedMap.get("result_code"))) {
                 //从微信的响应中获取订单流水号
                 String outTradeNo = sortedMap.get("out_trade_no");
                 VideoOrder dbVideoOrder = videoOrderService.findByOutTradeNo(outTradeNo);
                 //未支付状态，才更新
-                if(null != dbVideoOrder  && dbVideoOrder.getState() == 0){
+                if (null != dbVideoOrder && dbVideoOrder.getState() == 0) {
                     VideoOrder videoOrder = new VideoOrder();
                     videoOrder.setOpenid(sortedMap.get("openid"));
                     videoOrder.setOutTradeNo(outTradeNo);
@@ -132,11 +139,11 @@ public class WechatController {
                     videoOrder.setState(1);
                     //更新订单状态
                     int row = videoOrderService.updateVideoOderByOutTradeNo(videoOrder);
-                    if(row == 1){
+                    if (row == 1) {
                         //通知微信，订单支付成功
                         response.setContentType("text/xml");
                         response.getWriter().println("success");
-                        return ;
+                        return;
                     }
                 }
 

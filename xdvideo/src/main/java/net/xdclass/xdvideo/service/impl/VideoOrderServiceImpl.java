@@ -5,6 +5,7 @@ import net.xdclass.xdvideo.domain.User;
 import net.xdclass.xdvideo.domain.Video;
 import net.xdclass.xdvideo.domain.VideoOrder;
 import net.xdclass.xdvideo.dto.VideoOrderDto;
+import net.xdclass.xdvideo.exception.XdException;
 import net.xdclass.xdvideo.mapper.UserMapper;
 import net.xdclass.xdvideo.mapper.VideoMapper;
 import net.xdclass.xdvideo.mapper.VideoOrderMapper;
@@ -125,9 +126,15 @@ public class VideoOrderServiceImpl implements VideoOrderService {
             map = WXPayUtil.xmlToMap(orderStr);
             // https://pay.weixin.qq.com/wiki/doc/api/native.php?chapter=9_1
             // trade_type=NATIVE时有返回，此url用于生成支付二维码，然后提供给用户进行扫码支付。
-            String codeURL = map.get("code_url"); //用户扫描支付的URL
+            String msg = new String(map.get("return_msg").getBytes("ISO-8859-1"),"UTF-8");
+            if(!StringUtils.equals(msg,"OK")){
+                logger.error("Post unified order for get codeurl has error,return message is {}.",msg);
+            }
+
+            //用户扫码支付的URL
+            String codeURL = map.get("code_url");
             if(StringUtils.isBlank(codeURL)){
-                throw new RuntimeException("codeURL is empty!");
+                throw new XdException(500, "order codeURL is empty!");
             }
             return codeURL;
         } catch (Exception e) {

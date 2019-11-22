@@ -61,7 +61,8 @@ public class WeChatConfig {
      * 获取微信用户基本信息API地址 ACCESS_TOKEN OPENID参数需要替换  lang=zh_CN需要指定！！！不然拿到的所有信息都是英文的
      * https://api.weixin.qq.com/sns/userinfo?access_token=ACCESS_TOKEN&openid=OPENID
      */
-    public static final String OPNE_USER_INFO_URL="https://api.weixin.qq.com/sns/userinfo?access_token=%s&openid=%s%lang=zh_CN";
+   // public static final String OPNE_USER_INFO_URL="https://api.weixin.qq.com/sns/userinfo?access_token=%s&openid=%s%lang=zh_CN";   这里%s%lang=zh_CN &写为了%，！！！
+    public static final String OPNE_USER_INFO_URL="https://api.weixin.qq.com/sns/userinfo?access_token=%s&openid=%s&lang=zh_CN";
 
     /**
      * 微信商户号id
@@ -82,9 +83,11 @@ public class WeChatConfig {
     private String payCallbackUrl;
 
     /**
-     * 统一下单url
+     * 统一下单url,域名需要修改为小D课堂的支付域名！！！
      */
-    private String UNIFIED_ORDER_URL="https://api.mch.weixin.qq.com/pay/unifiedorder";
+    private String UNIFIED_ORDER_URL="http://api.xdclass.net/pay/unifiedorder";
+    //private String UNIFIED_ORDER_URL="https://api.mch.weixin.qq.com/pay/unifiedorder";
+
 
     public String getUNIFIED_ORDER_URL() {
         return UNIFIED_ORDER_URL;
